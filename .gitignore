@@ -1,0 +1,4 @@
+# Ignore autosaved emacs files and java classes
+*~
+*.class
+
