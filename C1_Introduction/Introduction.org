@@ -31,6 +31,6 @@ implementation/
    
  - /hello world in Java/
    hello world is a bit too simple, so I implemented [[https://leetcode.com/problems/longest-substring-without-repeating-characters/][this LeetCode problem]]
-   instead: [[file:LongestSubstringOfUniqueCharacters.java::import java.util.HashMap;][Longest Substring Without Repeating Characters]]
+   instead: [[https://github.com/andyjda/Reading-Crafting-Interpreters/blob/master/C1_Introduction/LongestSubstringOfUniqueCharacters.java][Longest Substring Without Repeating Characters]]
    
- - /hello world in C/
+ - /hello world in C/ TODO
