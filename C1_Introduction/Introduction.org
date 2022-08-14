@@ -26,11 +26,11 @@ implementation/
    with some helpful slides [[https://www.xn--pdrot-bsa.fr/slides/inria-junior-02-15.pdf][here]]
 * TODO challenges
  - /what are six domain-specific programming languages used to
-   write/publish this book?/
+   write/publish [[https://github.com/munificent/craftinginterpreters][this book]]?/
    Markdown, Sass (syntacyically awesome style sheets), HTML, Dart, Make, CSS
    
- - /hello world in Java/
+ - /hello world in Java/:
    hello world is a bit too simple, so I implemented [[https://leetcode.com/problems/longest-substring-without-repeating-characters/][this LeetCode problem]]
    instead: [[https://github.com/andyjda/Reading-Crafting-Interpreters/blob/master/C1_Introduction/LongestSubstringOfUniqueCharacters.java][Longest Substring Without Repeating Characters]]
    
- - /hello world in C/ TODO
+ - /hello world in C/: TODO
