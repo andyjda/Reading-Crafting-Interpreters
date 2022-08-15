@@ -45,10 +45,11 @@ public class LongestSubstringOfUniqueCharacters {
 	}
     }
 
+    // O(n) solution
     public static int find(String s) {
 	Map<Character, Integer> previouslySeen = new HashMap<>();
 	int maxLen = 0;
-	int curLen = 0;
+	int currentLen = 0;
 	int startPoint = 0;
 	for (int i = 0; i < s.length(); i++) {
 	    char c = s.charAt(i);
@@ -58,11 +59,11 @@ public class LongestSubstringOfUniqueCharacters {
 	    }
 	    if (lastSeenAt >= startPoint) {
 		startPoint = lastSeenAt + 1;
-		curLen = i - lastSeenAt;
+		currentLen = i - lastSeenAt;
 	    } else {
-		curLen++;
-		if (maxLen < curLen) {
-		    maxLen = curLen;
+		currentLen++;
+		if (maxLen < currentLen) {
+		    maxLen = currentLen;
 		}
 	    }
 
