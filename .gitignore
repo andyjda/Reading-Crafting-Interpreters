@@ -1,4 +1,5 @@
-# Ignore autosaved emacs files and java classes
+# Ignore autosaved emacs files, java classes, and executables
 *~
 *.class
 
+/C1_Introduction/DoublyLinkedList
