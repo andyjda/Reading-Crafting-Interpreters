@@ -1,0 +1,44 @@
+#+TITLE: Chapter 2: A Map of the Territory
+[[https://craftinginterpreters.com/a-map-of-the-territory.html][link]]
+* _outline_
+- a language != its implementation
+- language: follows its specifications
+- implementation: low-level mechanisms to make language work in particular
+  environment
+** 2.1 parts of a language
+- climbing = start from raw source text ➡️ analyze & transform the program ➡️ higher-level representation. [[https://en.wikipedia.org/wiki/Semantics_(computer_science)][Semantics]] (how the program will be executed) become more and more clear ➡️ reach the peak: what the code /means/ (ie what the program does) is clear
+- descent = transform the high-level representation down to low-level forms ➡️ getting closer and closer to actual CPU instructions
+*** The climb
+**** 2.1.1 Scanning / lexing
+go from linear stream of characters to stream of tokens
+*eg:*
+#+NAME: C example
+#+BEGIN_SRC C
+  int index = 0;
+  printf("we initialized index\n");
+#+END_SRC
+*becomes*
+token(int) token(index) token(=) token(;) token(printf) token(() token("we initialized index\n") token()) token(;)
+**** 2.1.1 Parsing
+_Grammar_: compose larger expressions and statements out of the smaller parts (tokens).
+Using the flat sequence of tokens, build a tree structure showing the grammar.
+*eg:*
+src_<C>{int average = (min + max) / 2;}
+*becomes*
+#+name: tree
+#+begin_src ditaa
+   [average]	statement variable
+       [/]	binary expression
+       / \
+      /   \
+     [+]   \	binary expression
+     / \   [2]	literal expression
+    /   \
+  [min]	 \	variable expression
+	 [max]	variable expression
+#+end_src
+
+** 2.2 shortcuts and alternate routes
+** 2.3 compilers and Interpreters
+** 2.4 our journey
+* _challenges_
