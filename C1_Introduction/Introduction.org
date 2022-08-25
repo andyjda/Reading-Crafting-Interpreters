@@ -1,6 +1,6 @@
 #+TITLE: Chapter 1: Introduction
 [[https://craftinginterpreters.com/introduction.html][link]]
-* outline
+* _outline_
 ** 1.0
 /book is light on theory, in favor of full overview of practical language
 implementation/
@@ -18,13 +18,19 @@ implementation/
  - written in C to leverage speed and optimization,
  - as well as a better view of low-level implementation
 
-* review concepts
+* /design note:/ _what's in a name_
+ 1. not in use
+ 2. easy to pronounce
+ 3. distinct enough to search for
+ 4. no negative connotations (across multiple cultures)
+
+* _review concepts_
  - _Curry-Howard isomorphism_:
    types correspond to prepositions, and values correspond to proofs.
    Theoretically, to prove a theorem: construct its type, then find a value
    of this type. Explained in detail [[https://en.wikibooks.org/wiki/Haskell/The_Curry%E2%80%93Howard_isomorphism][here]] and in more general terms [[https://stackoverflow.com/questions/10212660/curry-howard-isomorphism][here]],
    with some helpful slides [[https://www.xn--pdrot-bsa.fr/slides/inria-junior-02-15.pdf][here]]
-* TODO challenges
+* TODO _challenges_
  - /what are six domain-specific programming languages used to
    write/publish [[https://github.com/munificent/craftinginterpreters][this book]]?/
    Markdown, Sass (syntacyically awesome style sheets), HTML, Dart, Make, CSS
