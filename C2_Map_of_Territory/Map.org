@@ -8,7 +8,7 @@
 ** 2.1 parts of a language
 - climbing = start from raw source text ➡️ analyze & transform the program ➡️ higher-level representation. [[https://en.wikipedia.org/wiki/Semantics_(computer_science)][Semantics]] (how the program will be executed) become more and more clear ➡️ reach the peak: what the code /means/ (ie what the program does) is clear
 - descent = transform the high-level representation down to low-level forms ➡️ getting closer and closer to actual CPU instructions
-*** The climb
+*** The climb (*front end*)
 **** 2.1.1 Scanning / lexing
 go from linear stream of characters to stream of tokens
 *eg:*
@@ -34,11 +34,76 @@ src_<C>{int average = (min + max) / 2;}
      [+]   \	binary expression
      / \   [2]	literal expression
     /   \
-  [min]	 \	variable expression
+  [min]  \	variable expression
 	 [max]	variable expression
 #+end_src
 
+It is at this step that our compiler recognizes and reports *syntax errors*. 
+**** 2.1.3 Static analysis
+This step is more language-specific than the previous two.
+
+ 1. *binding/resolution*: for each *identifier*, find its defition (*scope* is v important at this step)
+ 2. *type-checking*: having found an identifier's declaration, we can know its type. Determine if the type is being used correctly, otherwise report a *type error*
+    /Lox (the language in this book) is dynamically typed, so type-checking will happen later, at runtime/
+
+Where is the semantic information stored? 2 options
+ - on the syntax tree, as *attributes*: each node in the tree has extra fields (attributes) which aren't initialized during parsing, but get filled in later
+ - in a *symbol table*: keys are identifiers (variable names & declarations), values are what the identifier refers to
+*** Peak (*middle end*)
+**** 2.1.4 Intermediate representations
+The *front end* of a compiler deals with the language specifics, organizing the user's code into an internal representation. The *back end* is concerned with the specific hardware architecture, translating the internal representation into the actual instructions.
+The *middle end* is an _*intermediate representation*_ (*IR*)that acts as an interface between the two ends/languages/steps.
+
+/this is what makes it easier to target many languages and architecture in eg GCC: language front ends target established IRs like GIMPLE and RTL, and the back-ends for these IRs are already built. See eg [[https://zenodo.org/record/3736363][Bringing GNU Emacs to Native Code]], which uses a new IR (LIMPLE, which is modeled after GIMPLE) for optimization, and then translates it into the established libgccjit IR/
+
+**** 2.1.5 Otpimization
+Thanks to the front end portion of our language implementation, it is now clear what the program /means/. We can therefore make some changes that will preserver the /same semantics/ but implement them more *efficiently*.
+Typical example: *constant folding*. An expression that always evaluates to the same value is used repeatedly throughout the code. We can evaluate it at compile time and replace the expression with its result. If all values in an arithmetic expression are known at compile time:
+src_<java>{float pennyArea = 3.14159 * (0.75 / 2) * (0.75 / 2);}
+All of the math is done at compile time and the code becomes:
+src_<java>{float pennyArea = 0.4417860938;}
+Now everytime we run this code it'll be a quick variable assignment from a literal rather than the (imperceptibly) slower computation (this same principle can be applied to much more intensive computations, provided the value of the expression is constant).
+
+/This topic won't be covered extensively in the book./ Surprisingly, many languages like Lua and CPython have few optimizations at compile-time, focusing on runtime instead.
+
+*** Descent (*back end*)
+**** 2.1.6 Code generation
+*Code gen* where *code* = assembly-like instructions a CPU runs. How to convert our (optimized) IR into this?
+Options:
+ - generate instructions for a specific _real CPU_
+   (/native code = very fast, but lots of work to generate it, and tied to specific architecture/)
+ - or a _virtual one_
+   (/*p-code* or *bytecode* maps more closely to the language's semantics, not tied to any architecture's peculiarities/)
+
+**** 2.1.7 Virtual machine
+Two options:
+ - write a 'mini-compiler' for each target architecture, essentially treating the bytecode as an intermediate representation, converting it into that machine's native code. (some tension here: optimization works best when the specific chip, its strengths and capabilities, are known)
+ - write a *virtual machine* (*VM*): program emulating a hypothetical chip. This is slower than translating bytecode into native code: every instruction must be simulated at runtime each time. But, it is simpler and more portable: /the second interpreter in this book is built with a VM implemented in C, and can therefore run on any platform that has a C compiler/.
+
+**** 2.1.8 Runtime
+*Runtime* (in this sense) = services (programs) that our langauge provides while the program is running: garbage collection, representation to keep tracj of the type of each object during execution (supporting "instance of" tests)...
+In a fully compiled language, the runtime is embedded directly into the executable.
+In a language that runs inside an interpreter/VM, the runtime lives there (most implementations of Java, Python, JavaScript).
+    
 ** 2.2 shortcuts and alternate routes
+*** 2.2.1 Single-pass compilers
+Parsing + analysis + code generation all done at the same time, without ever allocating syntax trees or any IRs. As a result: the design of the language is restricted, and very little optimization is possible.
+C was designed aroundt this limitation (in an effort to use as little memory as possible due to constraints of the time). This is why you can't call a function above its definition (unless you use an explicit forward declaration, telling the compiler what it needs to know to generate code for a call to the later function).
+*** 2.2.2 Tree-walk interpreters
+Some languages begin executing code after parsing tit to an AST: the interpreter traverses the syntax tree, one branch at a time, and evaluates each node on the way.
+Not widely used for general-purpose languages as it tends to be slow.
+*** 2.2.3 Transpilers
+Aka *source-to-source compiler* or *transcompiler*. Common in situations where a single language dominates a specific market/domain: the spread of UNIX & C lead to the proliferation of compilers producing C as their output language. The current spread of JavaScipt as the main language of web browsers has lead to the proliferation of transpilers to JavaScript.
+The front end of a transpiler is similar to other compilers. Analysis (and optimization) may be omitted if the source language is enough semantically similar to the target language.
+Code generation: simply output a string of semantically correct code in the target language. Which then gets compiled in the existing compilation pipeline for that language.
+*** 2.2.4 Just-in-time compilation
+Compile the source-code (or, more frequently, bytecode) into native code at run time rather than before execution.
 ** 2.3 compilers and Interpreters
-** 2.4 our journey
+ - *Compiling* = /implementation technique/ transalting source language to another (usually lower level) form.
+ - a *compiler* generates code from source code but doesn't exeucte it
+ - an *interpreter* takes source code and executes it immediately (usually after compiling it). It runs the program "from source"
+/the second interpreter implemented in the book is, like the interpeter for CPython or Go, an interpreter with an internal compiler: the interpreter compiles the source code before running the target code/   
 * _challenges_
+** pick an open source implementation of a language and poke around the source code. Try to find the _scanner_ and _parser_. Are they handwritten, or generated using tools like Lex and Yacc?
+** JIT tends to be the fastest way to implement dynamically typed languages. What reasons are there /not/ to use JIT?
+** Most Lisp implementations that compile to C also contain an interpreter that lets them execute Lisp code on the fly. Why?
