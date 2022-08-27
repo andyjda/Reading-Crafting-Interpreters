@@ -23,7 +23,7 @@ token(int) token(index) token(=) token(;) token(printf) token(() token("we initi
 _Grammar_: compose larger expressions and statements out of the smaller parts (tokens).
 Using the flat sequence of tokens, build a tree structure showing the grammar.
 *eg:*
-src_<C>{int average = (min + max) / 2;}
+src_C:[exports code]{int average = (min + max) / 2;}
 *becomes*
 #+name: tree
 #+begin_src ditaa
@@ -56,7 +56,7 @@ The *middle end* is an _*intermediate representation*_ (*IR*)that acts as an int
 
 /this is what makes it easier to target many languages and architecture in eg GCC: language front ends target established IRs like GIMPLE and RTL, and the back-ends for these IRs are already built. See eg [[https://zenodo.org/record/3736363][Bringing GNU Emacs to Native Code]], which uses a new IR (LIMPLE, which is modeled after GIMPLE) for optimization, and then translates it into the established libgccjit IR/
 
-**** 2.1.5 Otpimization
+**** 2.1.5 Optimization
 Thanks to the front end portion of our language implementation, it is now clear what the program /means/. We can therefore make some changes that will preserver the /same semantics/ but implement them more *efficiently*.
 Typical example: *constant folding*. An expression that always evaluates to the same value is used repeatedly throughout the code. We can evaluate it at compile time and replace the expression with its result. If all values in an arithmetic expression are known at compile time:
 src_<java>{float pennyArea = 3.14159 * (0.75 / 2) * (0.75 / 2);}
@@ -104,6 +104,6 @@ Compile the source-code (or, more frequently, bytecode) into native code at run 
  - an *interpreter* takes source code and executes it immediately (usually after compiling it). It runs the program "from source"
 /the second interpreter implemented in the book is, like the interpeter for CPython or Go, an interpreter with an internal compiler: the interpreter compiles the source code before running the target code/   
 * _challenges_
-** pick an open source implementation of a language and poke around the source code. Try to find the _scanner_ and _parser_. Are they handwritten, or generated using tools like Lex and Yacc?
-** JIT tends to be the fastest way to implement dynamically typed languages. What reasons are there /not/ to use JIT?
-** Most Lisp implementations that compile to C also contain an interpreter that lets them execute Lisp code on the fly. Why?
+**** pick an open source implementation of a language and poke around the source code. Try to find the _scanner_ and _parser_. Are they handwritten, or generated using tools like Lex and Yacc?
+**** JIT tends to be the fastest way to implement dynamically typed languages. What reasons are there /not/ to use JIT?
+**** Most Lisp implementations that compile to C also contain an interpreter that lets them execute Lisp code on the fly. Why?
