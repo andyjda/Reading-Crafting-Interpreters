@@ -12,7 +12,7 @@
 **** 2.1.1 Scanning / lexing
 go from linear stream of characters to stream of tokens
 *eg:*
-#+NAME: C example
+#+NAME: C tokens example
 #+BEGIN_SRC C
   int index = 0;
   printf("we initialized index\n");
@@ -23,7 +23,10 @@ token(int) token(index) token(=) token(;) token(printf) token(() token("we initi
 _Grammar_: compose larger expressions and statements out of the smaller parts (tokens).
 Using the flat sequence of tokens, build a tree structure showing the grammar.
 *eg:*
-src_C:[exports code]{int average = (min + max) / 2;}
+#+NAME: C AST example
+#+BEGIN_SRC C
+  int average = (min + max) / 2;
+#+END_SRC
 *becomes*
 #+name: tree
 #+begin_src ditaa
@@ -42,13 +45,13 @@ It is at this step that our compiler recognizes and reports *syntax errors*.
 **** 2.1.3 Static analysis
 This step is more language-specific than the previous two.
 
- 1. *binding/resolution*: for each *identifier*, find its defition (*scope* is v important at this step)
- 2. *type-checking*: having found an identifier's declaration, we can know its type. Determine if the type is being used correctly, otherwise report a *type error*
-    /Lox (the language in this book) is dynamically typed, so type-checking will happen later, at runtime/
+1. *binding/resolution*: for each *identifier*, find its defition (*scope* is v important at this step)
+2. *type-checking*: having found an identifier's declaration, we can know its type. Determine if the type is being used correctly, otherwise report a *type error*
+   /Lox (the language in this book) is dynamically typed, so type-checking will happen later, at runtime/
 
 Where is the semantic information stored? 2 options
- - on the syntax tree, as *attributes*: each node in the tree has extra fields (attributes) which aren't initialized during parsing, but get filled in later
- - in a *symbol table*: keys are identifiers (variable names & declarations), values are what the identifier refers to
+- on the syntax tree, as *attributes*: each node in the tree has extra fields (attributes) which aren't initialized during parsing, but get filled in later
+- in a *symbol table*: keys are identifiers (variable names & declarations), values are what the identifier refers to
 *** Peak (*middle end*)
 **** 2.1.4 Intermediate representations
 The *front end* of a compiler deals with the language specifics, organizing the user's code into an internal representation. The *back end* is concerned with the specific hardware architecture, translating the internal representation into the actual instructions.
@@ -70,15 +73,15 @@ Now everytime we run this code it'll be a quick variable assignment from a liter
 **** 2.1.6 Code generation
 *Code gen* where *code* = assembly-like instructions a CPU runs. How to convert our (optimized) IR into this?
 Options:
- - generate instructions for a specific _real CPU_
-   (/native code = very fast, but lots of work to generate it, and tied to specific architecture/)
- - or a _virtual one_
-   (/*p-code* or *bytecode* maps more closely to the language's semantics, not tied to any architecture's peculiarities/)
+- generate instructions for a specific _real CPU_
+  (/native code = very fast, but lots of work to generate it, and tied to specific architecture/)
+- or a _virtual one_
+  (/*p-code* or *bytecode* maps more closely to the language's semantics, not tied to any architecture's peculiarities/)
 
 **** 2.1.7 Virtual machine
 Two options:
- - write a 'mini-compiler' for each target architecture, essentially treating the bytecode as an intermediate representation, converting it into that machine's native code. (some tension here: optimization works best when the specific chip, its strengths and capabilities, are known)
- - write a *virtual machine* (*VM*): program emulating a hypothetical chip. This is slower than translating bytecode into native code: every instruction must be simulated at runtime each time. But, it is simpler and more portable: /the second interpreter in this book is built with a VM implemented in C, and can therefore run on any platform that has a C compiler/.
+- write a 'mini-compiler' for each target architecture, essentially treating the bytecode as an intermediate representation, converting it into that machine's native code. (some tension here: optimization works best when the specific chip, its strengths and capabilities, are known)
+- write a *virtual machine* (*VM*): program emulating a hypothetical chip. This is slower than translating bytecode into native code: every instruction must be simulated at runtime each time. But, it is simpler and more portable: /the second interpreter in this book is built with a VM implemented in C, and can therefore run on any platform that has a C compiler/.
 
 **** 2.1.8 Runtime
 *Runtime* (in this sense) = services (programs) that our langauge provides while the program is running: garbage collection, representation to keep tracj of the type of each object during execution (supporting "instance of" tests)...
@@ -99,9 +102,9 @@ Code generation: simply output a string of semantically correct code in the targ
 *** 2.2.4 Just-in-time compilation
 Compile the source-code (or, more frequently, bytecode) into native code at run time rather than before execution.
 ** 2.3 compilers and Interpreters
- - *Compiling* = /implementation technique/ transalting source language to another (usually lower level) form.
- - a *compiler* generates code from source code but doesn't exeucte it
- - an *interpreter* takes source code and executes it immediately (usually after compiling it). It runs the program "from source"
+- *Compiling* = /implementation technique/ transalting source language to another (usually lower level) form.
+- a *compiler* generates code from source code but doesn't exeucte it
+- an *interpreter* takes source code and executes it immediately (usually after compiling it). It runs the program "from source"
 /the second interpreter implemented in the book is, like the interpeter for CPython or Go, an interpreter with an internal compiler: the interpreter compiles the source code before running the target code/   
 * _challenges_
 **** pick an open source implementation of a language and poke around the source code. Try to find the _scanner_ and _parser_. Are they handwritten, or generated using tools like Lex and Yacc?
