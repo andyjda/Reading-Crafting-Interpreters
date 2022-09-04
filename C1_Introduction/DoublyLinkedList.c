@@ -48,7 +48,7 @@ int getLength(Node* head)
   return i;
 }
 
-int printList(Node* head)
+void printList(Node* head)
 {
   printf("printing list\n");
   /* printf("list's length: %d\n", getLength(head)); */
@@ -63,14 +63,28 @@ int printList(Node* head)
     head = head->next;
   }
   printf("finished printing list\n");
-  return 0;
 }
 
-int printNode(Node* n)
+void printListOneLine(Node* head)
+{
+  printf("the list:\n");
+  /* printf("list's length: %d\n", getLength(head)); */
+  if (head == NULL) {
+    printf("head is NULL");
+  }
+  int i = 0;
+  while (head != NULL) {
+    printf("%s ", prettify(head->data));
+    i++;
+    head = head->next;
+  }
+  printf("\n");
+}
+
+void printNode(Node* n)
 {
   if (n == NULL) {
     printf("node is NULL");
-    return 0;
   }
   
   printf("value: %s\n", n->data);
@@ -87,7 +101,6 @@ int printNode(Node* n)
     printf("next NULL\n");
   }
   printf("\n");
-  return 0;
 }
 
 Node* findByIndex(int index, Node* head)
@@ -118,32 +131,38 @@ Node* findByValue(char dataToFind[], Node* head)
   return head;
 }
 
-void insertAfterNode(Node* n, char data[])
+Node* createNode(char data[])
 {
   Node* new = (Node*)malloc(sizeof(Node));
-  new->data = data;
+  // copy the string to the heap
+  new->data = malloc(strlen(data) + 1);
+  strcpy(new->data, data);
+  return new;
+}
+
+void insertAfterNode(Node* n, char data[])
+{
+  Node* new = createNode(data);
   new->prev = n;
 
   new->next = n->next;
   n->next = new;
 }
 
-Node* insertByIndex(int index, char data[], Node* head)
+void insertByIndex(int index, char data[], Node* head)
 {
   Node* n = findByIndex(index, head);
   if (n != NULL) {
     insertAfterNode(n, data);
   }
-  return head;
 }
 
-Node* insertByValue(char dataToFind[], char data[], Node* head)
+void insertByValue(char dataToFind[], char data[], Node* head)
 {
   Node* n = findByValue(dataToFind, head);
   if (n != NULL) {
     insertAfterNode(n, data);
   }
-  return head;
 }
 
 Node* deleteNode(Node* n, Node* head)
@@ -158,7 +177,7 @@ Node* deleteNode(Node* n, Node* head)
   if (next != NULL) {
     next->prev = prev;
   }
-  
+  free(n->data);
   free(n);
   return head;
 }
@@ -183,8 +202,7 @@ Node* deleteByValue(char dataToFind[], Node* head)
 
 Node* append(char data[], Node* head)
 {
-  Node* new = (Node*)malloc(sizeof(Node));
-  new->data = data;
+  Node* new = createNode(data);
 
   if (head == NULL) {
     return new;
@@ -221,21 +239,21 @@ int main()
   printf("\nfinding by value: %s\n", "hello");
   printNode(findByValue("hello", head));
 
-  printf("\ninserting by index: %d\n", 0);
+  printf("\ninserting by index, after: %d, insert: %s\n", 0, "beautiful");
   insertByIndex(0, "beautiful", head);
-  printList(head);
+  printListOneLine(head);
 
-  printf("\ninserting by value: %s\n", "you");
+  printf("\ninserting by value, after: %s, insert: %s\n", "you", "doing");
   insertByValue("you", "doing", head);
-  printList(head);
+  printListOneLine(head);
 
   printf("\ndeleting by index: %d\n", 0);
   head = deleteByIndex(0, head);
-  printList(head);
+  printListOneLine(head);
 
   printf("\ndeleting by value: %s\n", "?");
   head = deleteByValue("?", head);
-  printList(head);
+  printListOneLine(head);
 
   return 0;
 }
