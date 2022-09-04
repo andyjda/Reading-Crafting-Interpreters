@@ -14,11 +14,15 @@ typedef struct Node {
   char* data;
 } Node;
 
-const char* RESET = "\033[0m";
+// variables to help the prettify function
+// (absolutely not needed for the stated problem,
+// but a cool way to get more familiar with string operations
+// and printing pretty output in C)
 const int totColors = 7;
 const char *colors[totColors] = {"\033[0;31m", "\033[0;32m", "\033[0;33m",
 				 "\033[0;34m", "\033[0;35m", "\033[0;36m",
 				 "\033[0;37m"};
+const char* RESET = "\033[0m";
 int colorCounter = 0;
 char targetS[50];
 
