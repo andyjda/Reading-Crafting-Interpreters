@@ -29,6 +29,11 @@ char targetS[50];
 // cycle through colors when printing data
 char* prettify(char* data)
 {
+  if (strlen(data) + 14 >= 50) {
+    printf("(resulting string is too large to colorize!");
+    printf(" use shorter string or expand size of targetS)\n\n\n");
+    return data;
+  }
   colorCounter++;
   if (colorCounter == totColors) {
     colorCounter = 0;

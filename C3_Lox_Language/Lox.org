@@ -1,0 +1,150 @@
+#+TITLE: Chapter 3: The Lox Language
+[[https://craftinginterpreters.com/the-lox-language.html][link]]
+* _outline_
+- a language != its implementation
+- language: follows its specifications
+- implementation: low-level mechanisms to make language work in particular
+  environment
+** 3.1 Hello, Lox
+C-like syntax for familiarity
+** 3.2 High-Level Language
+not as big a language as Java. More inspired by JavaScript and Lua. Especially in regards to:
+*** Dynamic typing
+(mostly for practical reason: it is hard to implement a static type system. Faster and easier to have a functioning interpreter if we defer type-checking to runtime
+*** Automatic memory management
+ 1. *Reference counting*
+    simpler to implement, but with limitations
+ 2. *(Tracing) garbage collection* aka *GC*
+    this is what Lox uses
+** 3.3 Data Types
+*** Boolean
+*** Numbers
+just one kind: double-precision *floating point*
+*** Strings
+*** Nil
+Good arguments for not having this: null pointer errors can be dangerous. *But* in a *dynamically* typed language, it's often more annoying to not have *nil*
+** 3.4 Expressions
+*** Arithmetic
+**** common *infix* *binary* operators: /+, ***, -, //
+ - '/-/' can also be used as an *prefix* operator
+ - all of these operators apply *only to numbers* except '/+/' which applies to *strings* too
+*** Comparison and equality
+**** typical C-like ones: /<, >, <=, >=, !=, ==/
+ - note that you can compare two values of different types, though they'll never be equal
+ - /I've recently found out that JavaScript does implicit conversion and I've been gnashing my teeth in my sleep ever since/
+*** Logical operators
+**** prefix /!/ returns the opposite of the following Boolean operand
+**** /and/ and /or/ are more control-flow constructs rather than expressions
+note that they *short-circuit*: if the left operand of /and/ is false, /and/ doesn't even evaluate the right operand. Conversely, /or/ skips the right operand if the left one is true
+*** Precedence and grouping
+like C
+** 3.5 Statements
+ - Unlike expressions, which produce a /value/, statements produce an /effect/: modify state, read input, produce output
+ - An expression followed by a /;/ is an *expression statement*
+ - statements can be wrapped in a *block*
+** 3.6 Variables
+Declared using /var/ statements. If it's not initialized to a specific value, the variable defaults to /nil/:
+#+NAME: Lox vars example
+#+BEGIN_SRC JavaScript
+  var x = "this is a string";
+  var thisStartsAsNil;
+#+END_SRC
+scope works mostly like C and Java; a more detailed discussion is (/you guessed it/) beyond the scope of this chapter
+** 3.7 Control Flow
+These all work like C
+*** if
+*** while
+*** for
+** 3.8 Functions
+ - called like C: /funcName();/
+ - defined with keyword /fun/
+ - important distinction:
+   * *argument* is the actual value passed to a function when it's being called
+        ➡️ a function /call/ has an /argument/ list
+        aka *actual parameter*
+   * *parameter* is the variable holding this value inside the function's body
+        ➡️ a function /declaration/ has a /parameter/ list
+        aka *formal parameter*
+ - body of a function = a block
+ - values returned using the /return/ statement
+ - if execution reaches the end of the block before hitting a /return/, we implicitly return /nil/
+Note that statically-typed functions distinguish between /declaring/ functions and /defining/ them:
+ - A declaration binds the function's name to a specific type, so that calls can be type-checked.
+ - A definition provides the function's body so that it can be compiled
+   This distinction doesn't meaningfully apply to dynamically-typed languages like Lox
+*** Closures
+ - functions are /first-class/
+ - function-declarations are /statements/
+ - ➡️ you can declare local functions inside other functions
+#+NAME: Lox closures example
+#+BEGIN_SRC_JavaScript
+fun returnFunction() {
+  var outside = "outside";
+
+  fun inner() {
+    print outside;
+  }
+
+  return inner;
+}
+
+var fn = returnFunction();
+fn();
+#+END_SRC
+**** /inner/ is "holding on" to references to any surrounding variables it uses: they are around even after the outer function has returned
+**** these functions are called *closures*
+sometimes the term is (somewhat mistakenly) applied to any first-class function
+**** check out Peter J. Landin's cool paper [[https://homepages.inf.ed.ac.uk/wadler/papers/papers-we-love/landin-next-700.pdf]["The Next 700 Programming Languages"]]
+** 3.9 Classes
+For dynamically-typed languages, objects are pretty handy: they allow to define compound data-types, and to define methods on those specific types.
+*** Classes vs Prototypes
+ - class-based languages: instances & classes. Instances store the state of the specific object and have reference to the instance's class. Classes contain the methods and inheritance chain. *Static dispatch*: method lookup is done at compile time. *Dynamic dispatch*: the class of the actual instance/object is looked up at runtime (this is how it works for virtual methods and dynamically-typed languages)
+ - prototypes: there are no classes, only objects. Objects can directly inherit from ("delegate to") each other.
+*** Classes in Lox
+#+NAME: Lox classes example
+#+BEGIN_SRC JavaScript
+class Breakfast {
+  cook() {
+    print "Eggs a-fryin'!";
+  }
+
+  serve(who) {
+    print "Enjoy your breakfast, " + who + ".";
+  }
+}
+
+// classes are first class:
+// Store it in variables.
+var someVariable = Breakfast;
+
+// Pass it to functions.
+someFunction(Breakfast);
+
+// create an instance:
+var breakfast = Breakfast();
+#+END_SRC
+*** Instantiation and initialization
+You can assign to fields within the class. If the field doesn't exist yet, it is created.
+The initializer method /init()/ gets automatically called when the object is constructed
+*** Inheritance
+#+NAME: Lox inheritance example
+#+BEGIN_SRC JavaScript
+class Brunch < Breakfast {
+  drink() {
+    print "How about a Bloody Mary?";
+  }
+}
+#+END_SRC
+*Note that:* every instance of a subclass is an instance of the superclass, but there may be instances of the superclass that are not instances of the subclass. In other words, the set of possible *Brunches* is smaller (/</) than the set of possible *Breakfasts*
+** 3.10 Standard Library
+minimal, only contains the /clock()/ function
+* review concepts
+ - Landin's paper at this [[https://homepages.inf.ed.ac.uk/wadler/papers/papers-we-love/landin-next-700.pdf][link]]
+* _challenges_
+1. Write some sample Lox programs and run them
+2. List some things about the language's syntax and semantics that are not specified in this introduction
+3. What missing features (aside from the library) would make it annoying to write programs?
+* design note: expression and statements
+*Expressions* evaluate to a value; *statements* produce a side-effect.
+Having only expressions may make things simpler and more concise (eg a variable declaration evaluates to the value of the variable), but it can get confusing/thorny with some procedures: what does a loop evaluate to?
+#  LocalWords:  Lox Lua funcName init
